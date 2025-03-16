@@ -1,0 +1,62 @@
+// File: src/main/java/com/project/restaurantorderservice/commandhandlers/OrderCommandHandlers.java
+package com.project.restaurantorderservice.commandhandlers;
+
+import com.project.restaurantorderservice.messages.commands.ApproveOrderCommand;
+import com.project.restaurantorderservice.messages.commands.RejectOrderCommand;
+import com.project.restaurantorderservice.messages.replies.Success;
+import com.project.restaurantorderservice.sagaparticipants.OrderServiceProxy;
+import com.project.restaurantorderservice.service.OrderService;
+import io.eventuate.tram.commands.consumer.CommandHandlers;
+import io.eventuate.tram.commands.consumer.CommandMessage;
+import io.eventuate.tram.messaging.common.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
+public class OrderCommandHandlers {
+
+    @Autowired
+    private OrderService orderService;
+
+    public CommandHandlers commandHandlers() {
+        // Create a simplified version without using SagaCommandHandlersBuilder
+        return new CommandHandlers() {
+            @Override
+            public Map<String, Map<String, CommandHandler>> getCommandHandlers() {
+                // Create a map of command handlers manually
+                Map<String, Map<String, CommandHandler>> handlers = new HashMap<>();
+
+                Map<String, CommandHandler> orderServiceHandlers = new HashMap<>();
+                orderServiceHandlers.put(ApproveOrderCommand.class.getName(), this::approveOrder);
+                orderServiceHandlers.put(RejectOrderCommand.class.getName(), this::rejectOrder);
+
+                handlers.put(OrderServiceProxy.ORDER_SERVICE_CHANNEL, orderServiceHandlers);
+                return handlers;
+            }
+
+            private Message approveOrder(CommandMessage<?> cm) {
+                // Cast the command safely
+                ApproveOrderCommand command = (ApproveOrderCommand) cm.getCommand();
+                long orderId = command.getOrderId();
+                orderService.approveOrder(orderId);
+                return new Success();
+            }
+
+            private Message rejectOrder(CommandMessage<?> cm) {
+                // Cast the command safely
+                RejectOrderCommand command = (RejectOrderCommand) cm.getCommand();
+                long orderId = command.getOrderId();
+                orderService.rejectOrder(orderId);
+                return new Success();
+            }
+        };
+    }
+
+    // Add the CommandHandler interface for our simplified implementation
+    public interface CommandHandler {
+        Message invoke(CommandMessage<?> cm);
+    }
+}

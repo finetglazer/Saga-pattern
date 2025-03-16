@@ -1,0 +1,20 @@
+// File: src/main/java/com/project/restaurantorderservice/sagaparticipants/ConsumerServiceProxy.java
+package com.project.restaurantorderservice.sagaparticipants;
+
+import com.project.restaurantorderservice.messages.commands.ValidateOrderByConsumer;
+import com.project.restaurantorderservice.messages.replies.Success;
+import com.project.restaurantorderservice.sagas.commands.CommandEndpoint;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ConsumerServiceProxy {
+
+    public static final String CONSUMER_SERVICE_CHANNEL = "consumerService";
+
+    public final CommandEndpoint<ValidateOrderByConsumer> validateOrder =
+            CommandEndpoint.builder()
+                    .forCommand(ValidateOrderByConsumer.class)
+                    .withChannel(CONSUMER_SERVICE_CHANNEL)
+                    .withReply(Success.class)
+                    .build();
+}

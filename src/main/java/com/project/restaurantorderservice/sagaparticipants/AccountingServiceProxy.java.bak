@@ -1,0 +1,20 @@
+// File: src/main/java/com/project/restaurantorderservice/sagaparticipants/AccountingServiceProxy.java
+package com.project.restaurantorderservice.sagaparticipants;
+
+import com.project.restaurantorderservice.messages.commands.AuthorizeCommand;
+import com.project.restaurantorderservice.messages.replies.Success;
+import com.project.restaurantorderservice.sagas.commands.CommandEndpoint;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AccountingServiceProxy {
+
+    public static final String ACCOUNTING_SERVICE_CHANNEL = "accountingService";
+
+    public final CommandEndpoint<AuthorizeCommand> authorize =
+            CommandEndpoint.builder()
+                    .forCommand(AuthorizeCommand.class)
+                    .withChannel(ACCOUNTING_SERVICE_CHANNEL)
+                    .withReply(Success.class)
+                    .build();
+}

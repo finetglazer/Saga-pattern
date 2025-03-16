@@ -1,0 +1,37 @@
+// File: src/main/java/com/project/restaurantorderservice/sagaparticipants/KitchenServiceProxy.java
+package com.project.restaurantorderservice.sagaparticipants;
+
+import com.project.restaurantorderservice.messages.commands.CreateTicket;
+import com.project.restaurantorderservice.messages.commands.ConfirmCreateTicket;
+import com.project.restaurantorderservice.messages.commands.CancelCreateTicket;
+import com.project.restaurantorderservice.messages.replies.CreateTicketReply;
+import com.project.restaurantorderservice.messages.replies.Success;
+import com.project.restaurantorderservice.sagas.commands.CommandEndpoint;
+import org.springframework.stereotype.Component;
+
+@Component
+public class KitchenServiceProxy {
+
+    public static final String KITCHEN_SERVICE_CHANNEL = "kitchenService";
+
+    public final CommandEndpoint<CreateTicket> create =
+            CommandEndpoint.builder()
+                    .forCommand(CreateTicket.class)
+                    .withChannel(KITCHEN_SERVICE_CHANNEL)
+                    .withReply(CreateTicketReply.class)
+                    .build();
+
+    public final CommandEndpoint<ConfirmCreateTicket> confirmCreate =
+            CommandEndpoint.builder()
+                    .forCommand(ConfirmCreateTicket.class)
+                    .withChannel(KITCHEN_SERVICE_CHANNEL)
+                    .withReply(Success.class)
+                    .build();
+
+    public final CommandEndpoint<CancelCreateTicket> cancel =
+            CommandEndpoint.builder()
+                    .forCommand(CancelCreateTicket.class)
+                    .withChannel(KITCHEN_SERVICE_CHANNEL)
+                    .withReply(Success.class)
+                    .build();
+}
